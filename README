@@ -1,0 +1,43 @@
+= REDVECTOR
+
+== Under Construction
+
+Lots to do
+
+== Migration for now
+
+Currently we're storing dictionary/posting in a database table:
+
+  class AddRedVector < ActiveRecord::Migration
+    def self.up
+      create_table :tokens do |table|
+        table.column :token, :string
+        table.column :total_frequency, :integer
+        table.column :number_of_postings, :integer
+        table.column :idf, :float
+      end
+      create_table :postings do |table|
+        table.column :token_id, :integer
+        table.column :frequency, :integer
+        table.column :indexed_id, :integer #id of the indexed record 
+        table.column :indexed_type, :string #model type of indexed record
+      end	
+    end
+  
+    def self.down
+      drop_table :tokens
+      drop_table :postings
+    end
+  end
+
+Plan is to come up with a better approach and get off of DBs / ActiveRecord
+
+== History
+
+Went through a couple of different rewrites - again starting from the bare essentials once 
+again to expand the original purpose beyond a simple VSM - based search engine.. Lots more
+to come. 
+
+== ENDAX
+
+Software Services shop (primarily Ruby) in San Diego, Ca. 
