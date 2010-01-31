@@ -1,0 +1,186 @@
+
+body {
+	margin: 0;
+ 	padding: 0;
+ 	background: #cbccd2 url(../images/bg_stripe.gif) left bottom repeat-x;
+ 	color: #7e7f89;
+ 	font-family: "Lucida Grande", Verdana, sans-serif;
+ 	font-size: 14px;
+ 	line-height: 1.8em;
+ 	text-align: center; 	
+}
+a, a:link, a:visited {
+	color: #fff;
+	text-decoration: underline;
+}
+
+h1, h2{
+	font-family: Georgia, "Times New Roman", Times, serif;
+	font-weight: normal;
+	color: #989aa5;
+	padding: 0;
+}
+
+h1 {
+	
+	font-size: 26px;
+	margin: 12px 0 16px 0;
+}
+
+h2 {
+	border-bottom: 1px dashed #9b7bf00;
+	font-size: 22px;
+	margin: 14px 0;
+	padding: 0 0 4px 28px;
+}
+
+p {
+	line-height: 1.5em;
+	text-align: justify;
+	margin: 12px 0 10px;
+	padding: 0;
+}
+
+u {
+	list-style: none;
+	margin: 0 0 20px 0;
+	padding: 0 0 0 10px;
+}
+
+img {
+	border: 0;
+}
+
+/* @group Top Content Area */
+#content {
+	background: #fff url(../images/stripe.gif) left top repeat-x;
+	position: relative;
+	margin: auto;
+	padding: 40px 20px 15px 0;
+	text-align: center;
+}
+
+#topcontent {
+	margin: 0 auto;
+	padding: 0;
+	width: 750px;
+	text-align: center;
+	
+}
+
+#topcontent #logo {
+	border: none;
+}
+
+/* Menu Section */
+
+#menu ul {
+	text-align: center;
+	margin: 0;
+	padding: 28px 0 0 0;
+}
+
+#menu ul li {
+	background: none;
+	display: inline;
+	font-size: 20px;
+	list-style: none;
+	margin: 0 0 0 20px;
+	padding: 0 0 2px 0;
+}
+
+#menu ul li a {
+	color: #686972;
+	border-bottom:1px dotted #fff;
+	text-decoration:none;
+	text-transform: lowercase;
+}
+#menu ul li a:hover {
+	border-bottom: 1px dotted #641010;
+}
+
+.clear {
+	clear: both;
+	font-size: 0;
+	height: 0;
+	line-height: 0;
+}
+/* @end */
+
+/* @group Intro Content */
+#introcontent {
+	background-color: #f9f9fa;
+	border-bottom: 1px solid #dcdce0;
+	border-top: 1px solid #dcdce0;
+	font-size: 16px;
+	margin: 0;
+	padding: 0
+}
+
+#introcontent #intro {
+	margin: 0 auto;
+	padding: 0;
+	width: 755px;	
+}
+
+.introtext {
+	text-align: center;
+}
+/* @end */
+
+/* @group Main Content */
+#maincontent {
+	background-color: #fff;
+	margin: 0;
+	padding: 16px 0;
+}
+#maincontent #pubsection {
+	margin: 0 auto;
+	width: 755px;
+}
+.tellme {
+	float: left;
+	width: 488px;
+}
+/* @end */
+
+
+/* @group Right Block */
+.rightblock {
+	float: right;
+	text-align: center;
+	width: 224px;
+	border-left: 1px solid #dcdce0;
+	padding-left: 15px;
+}
+
+/* @end */
+
+
+
+/* @group footer */
+
+#footer {
+	border-top: 1px solid #a6a7ac;
+	margin: 0;
+	padding: 30px 0 30px 0;
+}
+
+#footer #details {
+	color: #444;
+	margin: 0 auto;
+	padding: 0;
+	width: 750px;
+}
+
+.contact {
+	float: left;
+	text-align: left;
+}
+
+#footer #details p {
+	margin: 4px 0;
+	font-size: 10px;
+}
+
+/* @end */
