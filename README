@@ -2,43 +2,10 @@
 
 == Under Construction
 
-Lots to do
+Basic idea is to put together VSM (vector space model) based toolset for a variety of things that could get some assistance from a variety of things VSMs provide. We're starting with search / tag but plan to think abt more. Also we're starting with a simple key / value store (e.g. pure ruby) but plan to build adapter support for Redis, etc. 
 
-
-== Migration for now
-
-Currently we're storing dictionary/posting in a database table:
-
-  class AddRedVector < ActiveRecord::Migration
-    def self.up
-      create_table :tokens do |table|
-        table.column :token, :string
-        table.column :total_frequency, :integer
-        table.column :number_of_postings, :integer
-        table.column :idf, :float
-      end
-      create_table :postings do |table|
-        table.column :token_id, :integer
-        table.column :frequency, :integer
-        table.column :indexed_id, :integer #id of the indexed record 
-        table.column :indexed_type, :string #model type of indexed record
-      end	
-    end
-  
-    def self.down
-      drop_table :tokens
-      drop_table :postings
-    end
-  end
-
-Plan is to come up with a better approach and get off of DBs / ActiveRecord
-
-== History
-
-Went through a couple of different rewrites - again starting from the bare essentials once 
-again to expand the original purpose beyond a simple VSM - based search engine.. Lots more
-to come. 
+Also plan to get it back to it's origins as a Rails plugin eventually. 
 
 == ENDAX
 
-Software Services shop (primarily Ruby) in San Diego, Ca. 
+Software Services shop (primarily Ruby) in Brooklyn, NY.

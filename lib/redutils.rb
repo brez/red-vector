@@ -1,4 +1,4 @@
-
+## COLLECTIONS
 #
 # Serves as a collection wrapper for the token / it's counts
 class TokenCollection
@@ -24,6 +24,7 @@ class ResultTokenCollection < TokenCollection
   end
 end
 
+## REPORTING
 #
 # Full Simularity report 
 class SimularityReport 
