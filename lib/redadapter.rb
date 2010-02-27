@@ -3,22 +3,22 @@
 #the adapter code will likely change a lot when we introduce support for say, 
 #redis which supports more complex data structures than pstore
 
-#might be able to clean this up a lot with method missing due to simularities in operations
 class Redadapter
-  include Redpstore #this should be configurable  
+  include Redpstore #this should be configurable
   def initialize()
     connect
   end
   #document
   def token_frequency(id, frequency)
-    payload = @db_document.get_document(id) || {}
+    payload = get_document(id) || {}
     payload[:token_frequency] = frequency
     put_document(id, payload)
   end
   #token
   # TODO Stemmer
   def token(token)
-    get_token(id)
+debugger
+    get_token(token)
   end
   def idf(token, idf)
     payload = get_token(token) 
