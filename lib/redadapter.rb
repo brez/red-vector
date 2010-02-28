@@ -17,7 +17,6 @@ class Redadapter
   #token
   # TODO Stemmer
   def token(token)
-debugger
     get_token(token)
   end
   def idf(token, idf)

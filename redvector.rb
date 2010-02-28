@@ -1,6 +1,7 @@
 require 'lib/redmajik'
 require 'lib/adapters/redpstore' #TODO make configurable
 require 'lib/redadapter'
+require 'lib/redexception'
 
 class Redvector
   include Redmajik
