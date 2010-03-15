@@ -1,5 +1,3 @@
-## COLLECTIONS
-#
 # Serves as a collection wrapper for the token / it's counts
 class TokenCollection
   attr_accessor :token
@@ -14,7 +12,6 @@ class TokenCollection
   end
 end
 
-#
 # Serves as a collection wrapper for the simularity results
 class ResultTokenCollection < TokenCollection
   attr_accessor :tf_x_idf
@@ -24,8 +21,7 @@ class ResultTokenCollection < TokenCollection
   end
 end
 
-## REPORTING
-#
+
 # Full Simularity report 
 class SimularityReport 
   attr_accessor :query
@@ -40,7 +36,6 @@ class SimularityReport
   end
 end
 
-#
 # Token report for article getting comparison   
 class TokenReport 
   attr_accessor :results

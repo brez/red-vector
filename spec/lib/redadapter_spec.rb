@@ -1,53 +1,78 @@
 require 'spec/spec_helper'
 
 describe Redadapter do
-  it "should throw an excpetion if the adapter is not intialized" do
-    pending
+  before(:each) do
+    @adapter = Redadapter.new
+    @doc = Document.make(:one)
+    @token = {:token => 'noise', :number_of_postings => 5}
   end
-  context "#token_frequency" do
-    it "should store a token frequency for the specified token" do
-      pending
-    end
+  after(:each) do
+    @adapter.destruct
   end
-  context "#token" do
-    it "should get a token based on it's token value" do
-      pending
-    end
-    it "should create a new token if the token is not found" do
-      pending
-    end
+  it "should set the token frequency for a given document_id" do
+    @adapter.put_document(@doc.document_id, {})
+    @adapter.token_frequency(@doc.document_id, 100)
+    @adapter.get_document(@doc.document_id)[:token_frequency].should == 100
   end
-  context "#idf" do
-    it "should get a token based on it's token value" do
-      pending
-    end
-    it "should create a new token if the token is not found" do
-      pending
-    end
+  it "should create a new document if one doesn't exist while setting the token frequency" do
+    @adapter.token_frequency(@doc.document_id, 100)
+    @adapter.get_document(@doc.document_id).should_not be(nil)
   end
-  
-end
-
-
-
-def idf(token, idf)
-  payload = get_token(token) 
-  raise Redexception::NotAValidTokenException unless payload
-  payload[:idf] = idf
-  put_token(id, payload)
-end
-def number_of_postings(token)
-  payload = get_token(token) 
-  raise Redexception::NotAValidTokenException unless payload
-  payload[:number_of_postings]
-end
-def total_frequency(frequency)
-  payload = get_token(id) 
-  raise Redexception::NotAValidTokenException unless payload
-  payload[:total_frequency] = frequency
-  put_token(id, payload)
-end
-#posting
-def posting(token, document, frequency)
-  put_posting(token, {:document => document, :frequency => frequency})
+  it "should get a token based on it's token value" do
+    @adapter.put_token(@token[:token], @token)
+    @adapter.token(@token[:token]).should be_an_instance_of(Hash)
+  end
+  it "should create a new token if the token is not found" do
+    @adapter.token(@token[:token]).should be_an_instance_of(Hash)
+  end
+  it "should intialize the token frequency to zero when creating a token" do
+    @adapter.token(@token[:token])[:total_frequency].should == 0 
+  end
+  it "should intialize the number of postings to zero when creating a token" do
+    @adapter.token(@token[:token])[:number_of_postings].should == 0 
+  end
+  it "should set the idf value for a given token" do
+    @adapter.put_token(@token[:token], @token)
+    @adapter.idf(@token[:token], 2.1009)
+    @adapter.get_token(@token[:token])[:idf].should == 2.1009 
+  end
+  it "should throw an exception if the token if an invalid token is passed to set the idf" do
+    lambda{@adapter.idf(@token[:token], 2.1009)}.should raise_error(Redexception::TokenMissing)
+  end
+  it "should return the number of postings for a given token" do
+    @adapter.put_token(@token[:token], @token)
+    @adapter.number_of_postings(@token[:token]).should == @token[:number_of_postings]
+  end
+  it "should throw an exception if the token if an invalid token is passed to set the number of postings" do
+    lambda{@adapter.number_of_postings(@token[:token])}.should raise_error(Redexception::TokenMissing)
+  end
+  it "should get the total frequency for a given token" do
+    @token[:total_frequency] = 21
+    @adapter.put_token(@token[:token], @token)
+    @adapter.total_frequency(@token[:token]).should == 21
+  end
+  it "should throw an exception if the token is not found" do
+    lambda{@adapter.total_frequency(@token[:token])}.should raise_error(Redexception::TokenMissing)
+  end
+  it "should set the posting for a existing token hash, document_id, and posting frequency" do
+    @token[:number_of_postings] = 6
+    @token[:total_frequency] = 12
+    @adapter.put_document(@doc.document_id, {})
+    @adapter.put_token(@token[:token], @token)
+    @adapter.posting(@token, @doc.document_id, 2)
+    @adapter.get_token(@token[:token])[:number_of_postings].should == 6
+    @adapter.get_token(@token[:token])[:total_frequency].should == 12
+    @adapter.get_posting(@token[:token])[:document_id].should == @doc.document_id
+    @adapter.get_posting(@token[:token])[:frequency].should == 2 
+  end
+  it "should set the posting for a new token hash, document_id, and posting frequency" do
+    @token[:number_of_postings] = 6
+    @token[:total_frequency] = 12
+    @adapter.put_document(@doc.document_id, {})
+    @adapter.posting(@token, @doc.document_id, 2)
+    @adapter.get_token(@token[:token])[:number_of_postings].should == 6
+    @adapter.get_token(@token[:token])[:total_frequency].should == 12
+    @adapter.get_posting(@token[:token])[:document_id].should == @doc.document_id
+    @adapter.get_posting(@token[:token])[:frequency].should == 2 
+  end
 end

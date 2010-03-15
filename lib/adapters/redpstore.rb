@@ -29,7 +29,12 @@ module Redpstore
       @db_document[id]
     end
   end
-  def add_posting(token, posting)
+  def document_exists?(id)
+    @db_document.transaction do
+      !@db_document[id].nil?
+    end
+  end
+  def put_posting(token, posting)
     @db_token.transaction do
       raise Redexception::TokenMissing if @db_token[posting[:token]].nil?
     end
@@ -37,7 +42,13 @@ module Redpstore
       raise Redexception::DocumentIdMissing if @db_document[posting[:document_id]].nil?
     end
     @db_posting.transaction do
-      @db_posting[token] = posting 
+      @db_posting[token] = posting
+    end
+  end
+  def get_posting(token)
+    @db_posting.transaction do
+      raise Redexception::PostingMissing if @db_posting[token].nil?
+      @db_posting[token]
     end
   end
   def get_token(token)
@@ -49,6 +60,11 @@ module Redpstore
   def put_token(token, payload)
     @db_token.transaction do
       @db_token[token] = payload 
+    end
+  end
+  def token_exists?(token)
+    @db_token.transaction do
+      !@db_token[token].nil?
     end
   end
 end

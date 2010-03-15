@@ -5,16 +5,16 @@ require 'lib/redutils'
 module Redmajik
   STOP_WORDS = Stopwords::STOP_WORDS
   SANITIZE_REGEXP = /('|\"|‘|’|\/|\\)/
-  TOKEN_REGEXP = /^[a-z]+$|^\w+\-\w+|^[a-z]+[0-9]+[a-z]+$|^[0-9]+[a-z]+|^[a-z]+[0-9]+$/ 
+  TOKEN_REGEXP = /^[a-z]+$|^\w+\-\w+|^[a-z]+[0-9]+[a-z]+$|^[0-9]+[a-z]+|^[a-z]+[0-9]+$/
 
   def index(document_id, text)
     tokens = Redmajik::generate_token_collections(text)
     @store.token_frequency(document_id, tokens.size)
     tokens.values.each do |token_collection|
       token = @store.token(token_collection.token)
-      token.total_frequency += token_collection.count
-      token.number_of_postings += 1
-      @store.posting(token_collection.token, document_id, token_collection.count)
+      token[:total_frequency] += token_collection.count
+      token[:number_of_postings] += 1
+      @store.posting(token, document_id, token_collection.count)
     end
   end
 
@@ -33,7 +33,7 @@ module Redmajik
       weight = @store.number_of_postings(token).to_f * @store.idf_for(token)
       sum_of_squares += weight * weight
     end
-    @store.set_length_(document_id, Math::sqrt(sum_of_squares))
+    @store.set_length(document_id, Math::sqrt(sum_of_squares))
   end
 
   # Standard vector space model with tf x idf
