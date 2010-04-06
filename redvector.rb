@@ -1,10 +1,10 @@
-require 'lib/redmajik'
+require 'lib/redindex'
 require 'lib/adapters/redpstore' #TODO make configurable
 require 'lib/redadapter'
 require 'lib/redexception'
 
 class Redvector
-  include Redmajik
+  include Redindex
   REPORTING = true #TODO make configurable
   CLASSIC_NORMALIZATION = true
   def initialize()

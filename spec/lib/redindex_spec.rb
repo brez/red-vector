@@ -1,10 +1,10 @@
 require 'spec/spec_helper'
 
-describe Redmajik do
+describe Redindex do
   before(:each) do
     @adapter = Redadapter.new
     @class = Class.new
-    @class.extend(Redmajik)
+    @class.extend(Redindex)
     @class.instance_variable_set(:@store, @adapter)
   end
   after(:each) do
