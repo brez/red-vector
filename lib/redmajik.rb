@@ -28,10 +28,9 @@ module Redmajik
   def calculate_document_length(document_id)
     sum_of_squares = 0.0
     weight = 0.0
-    #preprocess for calculating the document length
     @store.tokens_for(document_id).each do |token|
       weight = @store.number_of_postings(token).to_f * @store.idf_for(token)
-      sum_of_squares += weight * weight
+      sum_of_squares += weight ** 2
     end
     @store.set_length(document_id, Math::sqrt(sum_of_squares))
   end
@@ -44,7 +43,7 @@ module Redmajik
   # @simularity_results => hash of matchs with score as key, records as value (not sorted)
   # @query_report => a few status abt the query options are: query_length, tokens
   # @simularity_report => specifics by token value
-  def retrieve(document, text)
+  def retrieve(text)
     @simularity_report = Hash.new
     @simularity_results = Hash.new
     @query_report = Hash.new

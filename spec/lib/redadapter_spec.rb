@@ -4,6 +4,7 @@ describe Redadapter do
   before(:each) do
     @adapter = Redadapter.new
     @doc = Document.make(:one)
+    @another = Document.make(:two)
     @token = {:token => 'noise', :number_of_postings => 5}
   end
   after(:each) do
@@ -24,6 +25,9 @@ describe Redadapter do
   end
   it "should create a new token if the token is not found" do
     @adapter.token(@token[:token]).should be_an_instance_of(Hash)
+  end
+  it "should contain the token when creating a token" do
+    @adapter.token(@token[:token])[:token].should == @token[:token] 
   end
   it "should intialize the token frequency to zero when creating a token" do
     @adapter.token(@token[:token])[:total_frequency].should == 0 
@@ -54,7 +58,7 @@ describe Redadapter do
   it "should throw an exception if the token is not found" do
     lambda{@adapter.total_frequency(@token[:token])}.should raise_error(Redexception::TokenMissing)
   end
-  it "should set the posting for a existing token hash, document_id, and posting frequency" do
+  it "should set the posting for a existing token hash and document_id with posting frequency" do
     @token[:number_of_postings] = 6
     @token[:total_frequency] = 12
     @adapter.put_document(@doc.document_id, {})
@@ -62,17 +66,32 @@ describe Redadapter do
     @adapter.posting(@token, @doc.document_id, 2)
     @adapter.get_token(@token[:token])[:number_of_postings].should == 6
     @adapter.get_token(@token[:token])[:total_frequency].should == 12
-    @adapter.get_posting(@token[:token])[:document_id].should == @doc.document_id
-    @adapter.get_posting(@token[:token])[:frequency].should == 2 
+    @adapter.get_posting(@token[:token])[:document_id_with_frequency].should == { @doc.document_id => 2 }
   end
-  it "should set the posting for a new token hash, document_id, and posting frequency" do
+  it "should set the posting for a new token hash and document_id with posting frequency" do
     @token[:number_of_postings] = 6
     @token[:total_frequency] = 12
     @adapter.put_document(@doc.document_id, {})
     @adapter.posting(@token, @doc.document_id, 2)
     @adapter.get_token(@token[:token])[:number_of_postings].should == 6
     @adapter.get_token(@token[:token])[:total_frequency].should == 12
-    @adapter.get_posting(@token[:token])[:document_id].should == @doc.document_id
-    @adapter.get_posting(@token[:token])[:frequency].should == 2 
+    @adapter.get_posting(@token[:token])[:document_id_with_frequency].should == { @doc.document_id => 2 }
+  end
+  it "should maintain the posting details for an existing token when adding a new posting" do
+    @adapter.put_document(@doc.document_id, {})
+    @adapter.posting(@token, @doc.document_id, 1)
+    @adapter.put_document(@another.document_id, {})
+    @adapter.posting(@token, @another.document_id, 1)
+    @adapter.get_posting(@token[:token])[:document_id_with_frequency].should == { @doc.document_id => 1, @another.document_id => 1 }
+  end  
+  it "should retrieve all the tokens in the entire store" do
+    @adapter.put_token(@token[:token], @token)
+    @adapter.all_tokens.size.should == 1
+  end
+  it "should retrieve all postings for a given token" do
+    @adapter.put_document(@doc.document_id, {})
+    @adapter.put_token(@token[:token], @token)
+    @adapter.posting(@token, @doc.document_id, 1)
+    @adapter.postings_for(@token[:token]).size.should == 1
   end
 end

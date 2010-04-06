@@ -12,7 +12,7 @@ module Redpstore
     @db_posting = PStore.new(DB_PATH+DB_POSTINGFILE)
     @db_token = PStore.new(DB_PATH+DB_TOKENFILE)
   end
-  def destruct #use with caution - exists primarily for specs
+  def destruct #use with caution - exists primarily for spec cleanup
     File.delete(DB_PATH+DB_DOCUMENTFILE) if File.exists?(DB_PATH+DB_DOCUMENTFILE)
     File.delete(DB_PATH+DB_POSTINGFILE) if File.exists?(DB_PATH+DB_POSTINGFILE)
     File.delete(DB_PATH+DB_TOKENFILE) if File.exists?(DB_PATH+DB_TOKENFILE)
@@ -34,12 +34,12 @@ module Redpstore
       !@db_document[id].nil?
     end
   end
-  def put_posting(token, posting)
+  def put_posting(token, document_id, posting)
     @db_token.transaction do
       raise Redexception::TokenMissing if @db_token[posting[:token]].nil?
     end
     @db_document.transaction do
-      raise Redexception::DocumentIdMissing if @db_document[posting[:document_id]].nil?
+      raise Redexception::DocumentIdMissing if @db_document[document_id].nil?
     end
     @db_posting.transaction do
       @db_posting[token] = posting
@@ -49,6 +49,11 @@ module Redpstore
     @db_posting.transaction do
       raise Redexception::PostingMissing if @db_posting[token].nil?
       @db_posting[token]
+    end
+  end
+  def posting_exists?(token)
+    @db_posting.transaction do
+      !@db_posting[token].nil?
     end
   end
   def get_token(token)
@@ -65,6 +70,17 @@ module Redpstore
   def token_exists?(token)
     @db_token.transaction do
       !@db_token[token].nil?
+    end
+  end
+  def get_all_tokens
+    @db_token.transaction do
+      roots = @db_token.roots
+    end
+  end
+  def get_postings_for(token)
+    @db_posting.transaction do
+      raise Redexception::PostingMissing if @db_posting[token].nil?
+      @db_posting[token][:document_id_with_frequency]
     end
   end
 end

@@ -15,7 +15,7 @@ class Redadapter
     put_document(document_id, payload)
   end
   def token(token)
-    put_token(token, {:total_frequency => 0, :number_of_postings => 0}) unless token_exists?(token)
+    put_token(token, {:token => token, :total_frequency => 0, :number_of_postings => 0}) unless token_exists?(token)
     get_token(token) 
   end
   def idf(token, idf)
@@ -36,7 +36,17 @@ class Redadapter
   end
   def posting(token_payload, document_id, posting_frequency)
     put_token(token_payload[:token], token_payload)
-    put_posting(token_payload[:token],
-      {:token => token_payload[:token], :document_id => document_id, :frequency => posting_frequency})
+    document_id_with_frequency = {document_id => posting_frequency}
+    if posting_exists?(token_payload[:token])
+      document_id_with_frequency.merge!(get_postings_for(token_payload[:token]))
+    end
+    put_posting(token_payload[:token], document_id,
+      { :token => token_payload[:token], :document_id_with_frequency => document_id_with_frequency })
+  end
+  def all_tokens
+    get_all_tokens
+  end
+  def postings_for(token)
+    get_postings_for(token)
   end
 end

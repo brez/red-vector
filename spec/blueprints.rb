@@ -28,3 +28,10 @@ Document.blueprint(:three) do
   title "Scarlet Face"
   body  DOC3
 end
+
+Document.blueprint(:simple) do
+  document_id 4
+  title "Simple"
+  body  "This is some simple text for testing"
+end
+
