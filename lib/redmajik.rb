@@ -1,14 +1,9 @@
-require 'stemmer'
-require 'stopwords'
 require 'lib/redutils'
 
 module Redmajik
-  STOP_WORDS = Stopwords::STOP_WORDS
-  SANITIZE_REGEXP = /('|\"|‘|’|\/|\\)/
-  TOKEN_REGEXP = /^[a-z]+$|^\w+\-\w+|^[a-z]+[0-9]+[a-z]+$|^[0-9]+[a-z]+|^[a-z]+[0-9]+$/
 
-  def index(document_id, text)
-    tokens = Redmajik::generate_token_collections(text)
+  def index(document_id, text, finalize=false)
+    tokens = TokenCollection.generate(text)
     @store.token_frequency(document_id, tokens.size)
     tokens.values.each do |token_collection|
       token = @store.token(token_collection.token)
@@ -16,18 +11,12 @@ module Redmajik
       token[:number_of_postings] += 1
       @store.posting(token, document_id, token_collection.count)
     end
-  end
-
-  #TODO daemon this
-  def calculate_IDFs
-    @store.all_tokens.each do |token| # TODO this needs to be an iterator
-      @store.set_idf_for(token, (Math::log(@store.count.to_f / @store.number_of_postings(token).to_f)))
-    end
+    #calculate_document_length(document_id)
+    finalize_index if finalize
   end
 
   def calculate_document_length(document_id)
-    sum_of_squares = 0.0
-    weight = 0.0
+    sum_of_squares, weight = 0.0, 0.0
     @store.tokens_for(document_id).each do |token|
       weight = @store.number_of_postings(token).to_f * @store.idf_for(token)
       sum_of_squares += weight ** 2
@@ -35,23 +24,25 @@ module Redmajik
     @store.set_length(document_id, Math::sqrt(sum_of_squares))
   end
 
+  def finalize_index
+    @store.all_tokens.each do |token| # TODO this needs to be an iterator
+      @store.set_idf_for(token, (Math::log(@store.count.to_f / @store.number_of_postings(token).to_f)))
+    end
+  end
+  
   # Standard vector space model with tf x idf
-  # Uses an 'Accumulator' approach to avoid having to literally compare vectors (a very bad O(n^2) algorithm).
+  # Uses an 'Accumulator' approach to avoid having to literally compare 
+  # vectors (a very bad O(n^2) algorithm).
   #
-  # Makes a few variables available
+  # Makes a few variables available if REPORTING is true
   # @sorted_records => actual records sorted by score
   # @simularity_results => hash of matchs with score as key, records as value (not sorted)
   # @query_report => a few status abt the query options are: query_length, tokens
   # @simularity_report => specifics by token value
   def retrieve(text)
-    @simularity_report = Hash.new
-    @simularity_results = Hash.new
-    @query_report = Hash.new
+    @simularity_report, @simularity_results, @query_report, query_tokens, @raw_results = {},{},{},{},{}
     @query_report[:tokens] = tokens if REPORTING
-    query_tokens = Hash.new
-    @raw_results = Hash.new
-    tokens = Redmajik::tokenize(text)
-    tokens.each do |token| 
+    text.tokenize.each do |token| 
       active_token = @store.token?(token.downcase.stem)
       unless active_token.nil?
         if query_tokens.key?(token)
@@ -93,38 +84,6 @@ module Redmajik
     else #instead divide raw score by query score
       @raw_results.each {|id, score| @simularity_results[id] = score / @raw_query_score }
     end
-  end
-
-  # Generate Token Collections
-  # Returns a Hash of token / token reports with the stemmed word for a key and TokenReport as a value  
-  def self.generate_token_collections(text)
-    text.downcase!
-    tokens = Hash.new
-    text.split.each do |token|
-      token = sanitize(token)
-      if token =~ TOKEN_REGEXP and !STOP_WORDS.member?(token)
-        stemmed = token.stem
-        tokens[stemmed] ||= TokenCollection.new(stemmed)
-        tokens[stemmed].original = token
-        tokens[stemmed] + 1
-      end
-    end
-    tokens
-  end
-  
-  # Prepares a potentially redundant Array of tokens
-  def self.tokenize(text)
-    text.downcase!
-    tokens = Array.new
-    text.split.each  do |token|
-      token = sanitize(token)
-      tokens << token if token =~ Stopwords.valid?(token)
-    end
-    tokens
-  end
-
-  def self.sanitize(text)
-    text.downcase.gsub(SANITIZE_REGEXP, '')
   end
 
 end

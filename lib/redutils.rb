@@ -1,23 +1,45 @@
-# Serves as a collection wrapper for the token / it's counts
+require 'stemmer'
+require 'stopwords'
+
+class String
+  TOKEN_REGEXP = /^[a-z]+$|^\w+\-\w+|^[a-z]+[0-9]+[a-z]+$|^[0-9]+[a-z]+|^[a-z]+[0-9]+$/
+  SANITIZE_REGEXP = /('|\"|‘|’|\/|\\)/
+  def tokenize
+    tokens = Array.new
+    self.split.each  do |token|
+      token.sanitize!
+      tokens << token if token =~ TOKEN_REGEXP and Stopwords.valid?(token)
+    end
+    tokens
+  end
+  def sanitize
+    self.downcase.gsub(SANITIZE_REGEXP, '')
+  end
+  def sanitize!
+    self.replace(self.sanitize)
+  end
+end
+
 class TokenCollection
   attr_accessor :token
   attr_accessor :original
   attr_accessor :count
-  def initialize(t)
-    @token = t
-    @count = 1
+  attr_accessor :tf_x_idf
+  def initialize(token)
+    @token, @count, @tf_x_idf = token, 1, 0.0
   end
   def +(x)
     @count += x
   end
-end
-
-# Serves as a collection wrapper for the simularity results
-class ResultTokenCollection < TokenCollection
-  attr_accessor :tf_x_idf
-  def intialize(t)
-    super(t)
-    @tf_x_idf = 0.0
+  def self.generate(text)
+    tokens = Hash.new
+    text.tokenize.each do |token|
+      stemmed = token.stem
+      tokens[stemmed] ||= self.new(stemmed)
+      tokens[stemmed].original = token
+      tokens[stemmed] + 1
+    end
+    tokens
   end
 end
 
