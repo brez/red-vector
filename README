@@ -6,6 +6,10 @@ Basic idea is to put together VSM (vector space model) based toolset for a varie
 
 Also plan to get it back to it's origins as a Rails plugin eventually or perhaps create specific plugins that leverage it (e.g. RedVectorSearch / RedVectorTag / etc)
 
-== ENDAX
+== What it's not
+
+A replacement for something as powerful as ThinkingSphinx / Solr / etc - the basic thought here is a simplified toolset with access to the underlying stats (e.g. you need to match everything above some threshold that you define)
+
+== ENDAX, LLC
 
 Software Services shop (primarily Ruby) in Brooklyn, NY.
