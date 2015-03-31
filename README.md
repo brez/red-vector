@@ -1,14 +1,14 @@
-= REDVECTOR
+# REDVECTOR
 
 Basic idea is to put together VSM (vector space model) based toolset for a variety of things that could get some assistance from a variety of things VSMs provide. Vague enough for you? We're starting with search / tag but plan to think abt more. Also we're starting with a simple key / value store (e.g. pure ruby) but plan to build adapter support for Redis, etc. 
 
 Also plan to get it back to it's origins as a Rails plugin eventually or perhaps create specific plugins that leverage it (e.g. RedVectorSearch / RedVectorTag / etc)
 
-== What it's not
+## What it's not
 
 A replacement for something as powerful as ThinkingSphinx / Solr / etc - the basic thought here is a simplified toolset with access to the underlying stats (e.g. you need to match everything above some threshold that you define)
 
-== License
+## License
 
 Copyright (C)2011 John Bresnik
 
